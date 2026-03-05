@@ -1,0 +1,29 @@
+.userresponse{
+    /* width: 100%;
+    display: flex;
+    justify-content: right; */
+    display: flex;
+    color: white;
+    background: black;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 50px;
+}
+.right{
+    color: white;
+    background: rgb(229, 6, 62);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 50px;
+    width: max-content;
+    justify-self: right;
+}
+.left{
+    color: white;
+    background: rgb(0, 79, 198);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 50px;
+    width: max-content;
+    justify-self: left;
+}
