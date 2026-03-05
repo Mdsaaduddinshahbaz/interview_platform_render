@@ -1,6 +1,6 @@
 from flask import render_template ,Flask,redirect,url_for,request
 from flask_socketio import SocketIO, join_room, emit
-from database import create_new_user,check_existing_user,create_new_meeting,read
+from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages
 import uuid
 from datetime import datetime
 app=Flask(__name__)
@@ -54,8 +54,8 @@ def create_meet():
 
 @app.route("/meet/<meet_id>")
 def join_meet(meet_id):
-    if meet_id not in chat_rooms:
-        chat_rooms[meet_id] = []
+    # if meet_id not in chat_rooms:
+    #     chat_rooms[meet_id] = []
 
     return render_template("session.html", meet_id=meet_id)
 
@@ -66,9 +66,20 @@ def handle_join(data):
     user_id=data["userid"]
     join_room(meet_id)
     print("userid=",user_id)
+    update_participants_in_meeting(user_id,meet_id)
     # Send previous messages to new user
-    for msg in chat_rooms.get(meet_id, []):
-        emit("receive_message", msg)
+    result=read_messages(meet_id)
+    # for msg in result:
+    #     print(msg["text"])
+    #     emit("receive_message", msg["text"])
+    for msg in result:
+        emit("receive_message", {
+            "sender":"user",
+            "userId": msg["sender_id"],
+            "message": msg["text"]
+        })
+    # for msg in chat_rooms.get(meet_id, []):
+    #     emit("receive_message", msg)
 
 
 @socketio.on("send_message")
@@ -82,10 +93,15 @@ def handle_message(data):
     }
 
     # Save in memory
-    chat_rooms[meet_id].append(message_obj)
+    # chat_rooms[meet_id].append(message_obj)
+    update_messages(meet_id,data["userId"],data["message"])
+    
 
     # Broadcast to everyone in room
     emit("receive_message", message_obj, room=meet_id)
+
+
+
 @socketio.on("push_message")
 def push_message(data):
     meet_id = data["meet_id"]

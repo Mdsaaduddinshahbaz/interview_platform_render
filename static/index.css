@@ -1,0 +1,16 @@
+#main_container{
+    display: flex;
+}
+
+#sidebar{
+    width: 250px;
+    height: 100vh;
+    background: cadetblue;
+}
+.sidebar_title{
+    justify-self:center;
+    margin-top: 63px;
+}
+#content{
+    padding: 20px;
+}

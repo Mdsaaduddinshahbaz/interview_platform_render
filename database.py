@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import jwt
+from bson import ObjectId
 from datetime import datetime
 load_dotenv(override=True)
 import os
@@ -20,17 +21,19 @@ def create_new_meeting(partcipants:list):
     meet_id=meetings.insert_one({"participants":partcipants,"created_time":datetime.utcnow()})
     print(meet_id.inserted_id)
     return meet_id.inserted_id
-def update_participants_in_meeting(email, meet_id):
-    user = users.find_one({"email": email})
-    userid = user["_id"]
-
-    meetings.update_one(
-        {"meet_id": meet_id},
+def update_participants_in_meeting(userid, meet_id):
+    res=meetings.update_one(
+        {"_id": ObjectId(meet_id)},
         {"$addToSet": {"participants": userid}}
     )
+    print(res.acknowledged)
 def update_messages(meet_id,sender_id,message):
-    messages.insert_one({"meet_id":meet_id,"sender_id":sender_id,"text":message,"timestamp":datetime.utcnow()})
-
+    res=messages.insert_one({"meet_id":meet_id,"sender_id":sender_id,"text":message,"timestamp":datetime.utcnow()})
+    print("messageupdated",res.acknowledged)
+def read_messages(meet_id):
+    result=messages.find({"meet_id":meet_id}).sort("timestamp",1)
+    # print(result.acknowledged)
+    return result.to_list()
 def create_new_user(email,password):
     user=users.find_one({"email":email})
     if(user==None):
@@ -48,4 +51,3 @@ def read(email):
 def update(email):
     result=users.update_one({"email":email},{"$set":{"password":5784}})
     print(result.matched_count)
-

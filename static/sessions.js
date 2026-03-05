@@ -13,41 +13,43 @@ function generateUserID() {
 
 // recognition.start();
 const socket = io();
-// const meet_id = window.location.pathname.split("/").pop();
+const meet_id = window.location.pathname.split("/").pop();
 socket.on("connect", async () => {
     user_id = localStorage.getItem("userId")
-    const res = await fetch(`/validate_meet`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "participants": [user_id] }),
-    });
-    const data = await res.json();
-    console.log(data.success)
-    if(data.success){
-        console.log(data.meet_id)
-        socket.emit("join", { meet_id: data.meet_id, userid: user_id });
-    }
-    else {
-        alert("theres some problem")
-        window.location.href="/home"
-    }
+    // const res = await fetch(`/validate_meet`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ "participants": [user_id] }),
+    // });
+    // const data = await res.json();
+    // console.log(data.success)
+    // if(data.success){
+    //     console.log(data.meet_id)
+    // }
+    // else {
+    //     alert("theres some problem")
+    //     window.location.href="/home"
+    // }
+    socket.emit("join", { meet_id: meet_id, userid: user_id });
 });
 socket.on("receive_message", function (data) {
     const container = document.createElement("container");
     container.className = "userresponsecontainer"
     const div = document.createElement("div");
     currentUserId = localStorage.getItem("userId")
+    console.log("currentid"+" "+currentUserId)
+    console.log("userid"+" "+data.userId)
     if (currentUserId === data.userId) {
         div.className = "userresponse";
         div.className = "right"
-        div.innerText = data.sender + ": " + data.message;
+        div.innerText = "You" + ": " + data.message;
         container.appendChild(div);
         document.body.append(container)
     }
     else {
         div.className = "userresponse";
         div.className = "left"
-        div.innerText = data.sender + ": " + data.message;
+        div.innerText = "Others" + ": " + data.message;
         container.appendChild(div);
         document.body.append(container)
     }
@@ -81,13 +83,13 @@ recognition.onresult = function (event) {
 
     // container.appendChild(divs);
     // document.body.appendChild(container)
-    console.log(userId)
     userId = localStorage.getItem("userId");
+    console.log(userId)
 
     socket.emit("send_message", {
         meet_id: meet_id,
-        sender: "User",
         userId: userId,
+        sender: "User",
         message: transcript
     });
 };
