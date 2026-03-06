@@ -1,6 +1,6 @@
 from flask import render_template ,Flask,redirect,url_for,request
 from flask_socketio import SocketIO, join_room, emit
-from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages
+from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages,list_previous_meetings,list_messages
 import uuid
 from datetime import datetime
 app=Flask(__name__)
@@ -102,10 +102,25 @@ def handle_message(data):
 
 
 
-@socketio.on("push_message")
-def push_message(data):
-    meet_id = data["meet_id"]
-
-
+# @socketio.on("push_message")
+@app.post("/list_meetings")
+def list_meetingss():
+    data=request.get_json()
+    userid=data["userid"]
+    res=list_previous_meetings(userid)
+    # if not res:
+    #     return {"success":False}
+    # else:
+    if res:
+        return {"success":True,"results":res}
+    return {"success":False}
+@app.post("/list_messages")
+def messaged():
+    data=request.get_json()
+    meet_id=data["meetid"]
+    results=list_messages(meet_id)
+    if(results):
+        return ({"success":True,"results":results})
+    return ({"success":False})
 if __name__ == "__main__":
     socketio.run(app, debug=True)

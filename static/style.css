@@ -27,3 +27,6 @@
     width: max-content;
     justify-self: left;
 }
+.meets{
+    justify-self: center;
+}
