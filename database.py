@@ -16,15 +16,15 @@ db=client["Interview"]
 users=db["Users"]
 meetings=db["meetings"]
 messages=db["messsages"]
-def create_new_meeting(partcipants:list):
+def create_new_meeting(participants_name:list ,partcipants:list):
     print("participants in database.py",partcipants)
-    meet_id=meetings.insert_one({"participants":partcipants,"created_time":datetime.utcnow()})
+    meet_id=meetings.insert_one({"participants_name":participants_name,"participants":partcipants,"created_time":datetime.utcnow()})
     print(meet_id.inserted_id)
     return meet_id.inserted_id
-def update_participants_in_meeting(userid, meet_id):
+def update_participants_in_meeting(userid, meet_id,username):
     res=meetings.update_one(
         {"_id": ObjectId(meet_id)},
-        {"$addToSet": {"participants": userid}}
+        {"$addToSet": {"participants": userid,"participants_name":username}},
     )
     print(res.acknowledged)
 def update_messages(meet_id,sender_id,message):
@@ -36,26 +36,31 @@ def list_previous_meetings(userid):
     for m in results:
         meetings_list.append({
             "meet_id": str(m["_id"]),
+            "participants_name":m["participants_name"],
             "participants": m["participants"],
             "created_time": m["created_time"].isoformat()
         })
     return meetings_list
     # return list(results)
 def delete_meetings(meetid):
-    meetid=ObjectId(meetid)
-    res = meetings.find_one_and_delete({"_id": meetid})
-
-    if res:
-        return True
+    # meetid=ObjectId(meetid)
+    response=messages.delete_many({"meet_id":meetid})
+    if (response):
+        res = meetings.find_one_and_delete({"_id": ObjectId(meetid)})
+        if res:
+            return True
+        else:
+            return False
     else:
         return False
+    
 def read_messages(meet_id):
     result=messages.find({"meet_id":meet_id}).sort("timestamp",1)
     # print(result.acknowledged)
     return result.to_list()
 def list_messages(meet_id):
+    # meet_id=ObjectId(meet_id)
     result=messages.find({"meet_id":meet_id}).sort("timestamp",1)
-    # print(result.to_list())
     meetings_list=[]
     for m in result:
         meetings_list.append({
@@ -70,9 +75,9 @@ def create_new_user(email,password):
     user=users.find_one({"email":email})
     if(user==None):
         users.insert_one({"email":email,"pasword":password})
+        return True
     else:
-        return 1
-    return 1
+        return False
 def check_existing_user(email,password):
     user=users.find_one({"email":email})
     if(user): return user["_id"]

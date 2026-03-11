@@ -41,8 +41,11 @@ console.log(formData)
         alert("user credentials not found")
       }
       else if(data.success){
+        console.log(data)
       alert(data.message || "Welcome!");
+      localStorage.setItem("username",data.username)
       localStorage.setItem("userId",data.user_id)
+      console.log(data.username)
       window.location.href="/home"
       }
       else{

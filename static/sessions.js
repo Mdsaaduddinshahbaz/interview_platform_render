@@ -16,6 +16,7 @@ const socket = io();
 const meet_id = window.location.pathname.split("/").pop();
 socket.on("connect", async () => {
     user_id = localStorage.getItem("userId")
+    username=localStorage.getItem("username")
     // const res = await fetch(`/validate_meet`, {
     //     method: "POST",
     //     headers: { "Content-Type": "application/json" },
@@ -30,7 +31,7 @@ socket.on("connect", async () => {
     //     alert("theres some problem")
     //     window.location.href="/home"
     // }
-    socket.emit("join", { meet_id: meet_id, userid: user_id });
+    socket.emit("join", { meet_id: meet_id, userid: user_id ,username:username});
 });
 socket.on("receive_message", function (data) {
     const container = document.createElement("container");

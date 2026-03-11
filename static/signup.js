@@ -22,16 +22,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch(`${BASEURL}/signup`, {
+      const res = await fetch(`/signup_user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ "email":email, "password":password }),
       });
 
       const data = await res.json();
       if (data.success) {
         alert(data.message || "Signup successful! Please login.");
-        window.location.href = "/authorization/auth.html";
+        window.location.href = "/home";
       }
       else if(!data.success){
         alert(data.message || "User already exists");

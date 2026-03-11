@@ -21,12 +21,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
     console.log(data.success)
     if (data.success) {
+        const username=localStorage.getItem("username")
         data.results.forEach(res => {
             let meeting_container = document.createElement('div')
             let meeting = document.createElement('button')
             meeting.className = "meets"
             meeting_container.className = "meet_container"
-            meeting.innerText = res.meet_id
+            for (let partcipant_name of res.participants_name){
+                console.log(partcipant_name)
+                if (username!==partcipant_name){
+                meeting.innerText = "interview with " + partcipant_name
+                }
+            }
+            meeting.setAttribute("meet_id",res.meet_id)
+            // meeting.innerText = res.meet_id
             meeting_container.appendChild(meeting)
             let deletebtn = document.createElement("button")
             deletebtn.id = "deletebtn"
@@ -51,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (e.target.closest("#deletebtn")) {
 
             const container = e.target.closest(".meet_container")
-            const meetId = container.querySelector(".meets").innerText
+            const meetId = container.querySelector(".meets").getAttribute("meet_id")
             console.log(meetId)
             const res = await fetch(`/delete_meeting`, {
                 method: "POST",
@@ -76,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const res = await fetch(`/list_messages`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ "meetid": e.target.innerText }),
+                body: JSON.stringify({ "meetid": e.target.getAttribute("meet_id") }),
             });
             const data = await res.json();
             console.log(data.success)
@@ -129,10 +137,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     startInterview.addEventListener("click", async () => {
         console.log("clicked")
         user_id = localStorage.getItem("userId")
+        username=localStorage.getItem("username")
+        console.log(username)
         const res = await fetch(`/validate_meet`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ "participants": [user_id] }),
+            body: JSON.stringify({ "participants_name":[username],"participants": [user_id] }),
         });
         const data = await res.json();
         console.log(data.success)

@@ -22,24 +22,35 @@ def login():
 @app.route("/signup")
 def signup():
     return render_template("signup.html")
+@app.post("/signup_user")
+def signup_user():
+    print(signup)
+    data=request.get_json()
+    email=data["email"]
+    password=data["password"]
+    res=create_new_user(email,password)
+    if(res):
+        return ({"success":True})
+    else:
+        return ({"success":False})
 @app.post("/validate")
 def validate():
     data=request.get_json()
     if not data:
        return ({"success":False})
     print(data)
-    userid=check_existing_user(data["username"],data["password"])
+    userid=check_existing_user(data["email"],data["password"])
     userid=str(userid)
     print(userid)
     if(userid==0):
         return ({"success":False})
-    return ({"success":True,"user_id":userid})
+    return ({"success":True,"user_id":userid,"username":data["username"]})
 @app.post("/validate_meet")
 def validate_meet_request():
     data=request.get_json()
     if not data : return ({"success":False})
     print("data in validate_meet",data)
-    meetid=create_new_meeting(data["participants"])
+    meetid=create_new_meeting(data["participants_name"],data["participants"])
     meetid=str(meetid)
     return ({"success":True,"meet_id":meetid})
 
@@ -65,9 +76,10 @@ def handle_join(data):
     print("new user connected")
     meet_id = data["meet_id"]
     user_id=data["userid"]
+    username=data["username"]
     join_room(meet_id)
     print("userid=",user_id)
-    update_participants_in_meeting(user_id,meet_id)
+    update_participants_in_meeting(user_id,meet_id,username)
     # Send previous messages to new user
     result=read_messages(meet_id)
     # for msg in result:
@@ -119,7 +131,9 @@ def list_meetingss():
 def messaged():
     data=request.get_json()
     meet_id=data["meetid"]
+    print("meet_id=",meet_id)
     results=list_messages(meet_id)
+    print("results=",results)
     if(results):
         return ({"success":True,"results":results})
     return ({"success":False})
