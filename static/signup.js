@@ -12,8 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
+    const username=document.getElementById("username").value.trim();
     const confirmPassword = document.getElementById("confirm_password").value;
 
     if (password !== confirmPassword) {
@@ -25,13 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`/signup_user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "email":email, "password":password }),
+        body: JSON.stringify({ "email":email, "password":password,"username":username }),
       });
 
       const data = await res.json();
       if (data.success) {
         alert(data.message || "Signup successful! Please login.");
-        window.location.href = "/home";
+        window.location.href = "/login";
       }
       else if(!data.success){
         alert(data.message || "User already exists");

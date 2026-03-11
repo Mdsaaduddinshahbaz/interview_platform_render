@@ -71,17 +71,27 @@ def list_messages(meet_id):
         })
     return meetings_list
 
-def create_new_user(email,password):
-    user=users.find_one({"email":email})
-    if(user==None):
-        users.insert_one({"email":email,"pasword":password})
+def create_new_user(email, password,username):
+    user = users.find_one({"email": email})
+
+    if user is None:
+        users.insert_one({
+            "email": email,
+            "username":username,
+            "password": password
+        })
         return True
     else:
         return False
 def check_existing_user(email,password):
     user=users.find_one({"email":email})
-    if(user): return user["_id"]
-    else: return 0
+    print(user)
+    if(user): 
+        if(user["password"]==password):
+            return ({"success":True,"userid":user["_id"],"username":user["username"]})
+        else:
+            return {"success":False}
+    else: return {"success":404}
 def read(email):
     user=users.find_one({"email":email})
     print(user["_id"])

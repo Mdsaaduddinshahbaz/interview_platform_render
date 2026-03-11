@@ -24,11 +24,14 @@ def signup():
     return render_template("signup.html")
 @app.post("/signup_user")
 def signup_user():
-    print(signup)
+    # print(signup)
     data=request.get_json()
+    print("data in signup",data)
     email=data["email"]
     password=data["password"]
-    res=create_new_user(email,password)
+    username=data["username"]
+    # print(email)
+    res=create_new_user(email,password,username)
     if(res):
         return ({"success":True})
     else:
@@ -39,12 +42,15 @@ def validate():
     if not data:
        return ({"success":False})
     print(data)
-    userid=check_existing_user(data["email"],data["password"])
-    userid=str(userid)
-    print(userid)
-    if(userid==0):
-        return ({"success":False})
-    return ({"success":True,"user_id":userid,"username":data["username"]})
+    res=check_existing_user(data["email"],data["password"])
+    print(res)
+    if(res["success"]==False): return({"success":False})
+    elif(res["success"]==True): 
+        userid=str(res["userid"])
+        username=res["username"]
+        print(userid)
+        return ({"success":True,"user_id":userid,"username":username})
+    else: return({"success":"Not_found"})
 @app.post("/validate_meet")
 def validate_meet_request():
     data=request.get_json()
@@ -161,4 +167,5 @@ def fetch_llm_response():
         return({"success":True,"result":responses})
     return({"success":False})
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    # socketio.run(app, debug=True)
+    socketio.run(app, host="0.0.0.0" , port=5000 ,debug=True)

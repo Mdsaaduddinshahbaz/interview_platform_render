@@ -161,6 +161,7 @@ html, body {
     padding: 10px 69px;
     color: white;
     box-shadow: 0cm;
+    visibility: hidden;
 }
 #list_previous_chats{
     overflow-y: auto;

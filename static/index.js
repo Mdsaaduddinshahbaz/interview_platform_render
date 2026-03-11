@@ -112,6 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         // document.body.append(container)
                     }
                     message_container.appendChild(container)
+                    evaluate_response.style.visibility="visible"
                 })
                 // if (currentUserId === data.sender_id) {
                 //     div.className = "userresponse";
