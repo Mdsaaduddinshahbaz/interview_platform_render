@@ -17,6 +17,9 @@
     border-radius: 50px;
     width: max-content;
     justify-self: right;
+    max-width: 60%;
+    overflow-wrap: break-word;
+
 }
 .left{
     color: white;
@@ -26,6 +29,8 @@
     border-radius: 50px;
     width: max-content;
     justify-self: left;
+    max-width: 60%;
+    overflow-wrap: break-word;
 }
 .meets{
     justify-self: center;

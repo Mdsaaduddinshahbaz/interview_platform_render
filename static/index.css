@@ -163,6 +163,20 @@ html, body {
     box-shadow: 0cm;
     visibility: hidden;
 }
+#Gemini{
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
+}
+#GeminiAPI{
+    margin-top: 10px;
+    width: 35%;
+    align-self: center;
+}
+#apikey{
+    padding: 6px;
+    border-radius: 50px;
+}
 #list_previous_chats{
     overflow-y: auto;
 }

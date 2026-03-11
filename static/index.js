@@ -1,10 +1,15 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    let uid=localStorage.getItem("userId")
+    if(!uid) window.location.href="/login"
     const startInterview = document.getElementById("startInterview")
     const sidebar = document.getElementById("list_previous_chats")
     const message_container = document.getElementById("chat_message")
     const evaluate_response = document.getElementById("triggerEvaluation")
     const overview_container = document.getElementById("overviewContainer")
     const overview_heading = document.getElementById("overviewHeading")
+    const save_key = document.getElementById("GeminiAPI")
+    const api_value = document.getElementById("apikey")
+    const api_container = document.getElementById("Gemini")
     const loading = document.getElementById("loading")
     const Mistakes = document.getElementById("Mistakes")
     const Rating = document.getElementById("Rating")
@@ -21,19 +26,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
     console.log(data.success)
     if (data.success) {
-        const username=localStorage.getItem("username")
+        const username = localStorage.getItem("username")
         data.results.forEach(res => {
             let meeting_container = document.createElement('div')
             let meeting = document.createElement('button')
             meeting.className = "meets"
             meeting_container.className = "meet_container"
-            for (let partcipant_name of res.participants_name){
+            for (let partcipant_name of res.participants_name) {
                 console.log(partcipant_name)
-                if (username!==partcipant_name){
-                meeting.innerText = "interview with " + partcipant_name
+                if (username !== partcipant_name) {
+                    meeting.innerText = "interview with " + partcipant_name
                 }
             }
-            meeting.setAttribute("meet_id",res.meet_id)
+            meeting.setAttribute("meet_id", res.meet_id)
             // meeting.innerText = res.meet_id
             meeting_container.appendChild(meeting)
             let deletebtn = document.createElement("button")
@@ -69,7 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const data = await res.json();
             console.log(data.success)
             if (data.success) {
-                alert("meet with " + meetId+ " got deleted")
+                alert("meet with " + meetId + " got deleted")
                 container.remove()
             }
         }
@@ -112,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         // document.body.append(container)
                     }
                     message_container.appendChild(container)
-                    evaluate_response.style.visibility="visible"
+                    evaluate_response.style.visibility = "visible"
                 })
                 // if (currentUserId === data.sender_id) {
                 //     div.className = "userresponse";
@@ -138,12 +143,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     startInterview.addEventListener("click", async () => {
         console.log("clicked")
         user_id = localStorage.getItem("userId")
-        username=localStorage.getItem("username")
+        username = localStorage.getItem("username")
         console.log(username)
         const res = await fetch(`/validate_meet`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ "participants_name":[username],"participants": [user_id] }),
+            body: JSON.stringify({ "participants_name": [username], "participants": [user_id] }),
         });
         const data = await res.json();
         console.log(data.success)
@@ -158,97 +163,125 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         // window.location.href = "/meet";
     })
-    evaluate_response.addEventListener("click", async () => {
-        overview_heading.innerText = "Evaluating"
-        overview_container.style.visibility = "visible"
-        const messages = message_container.children
-        const ls = [];
-
-        let currentQA = {};
-
-        for (let msg of messages) {
-
-            const [speaker, text] = msg.innerText.split(": ");
-
-            if (speaker === "Others") {
-                // currentQA = { question: text };
-                if (!currentQA.question) {
-                    currentQA.question = text;
-                } else {
-                    if (currentQA.answer) {
-                        ls.push(currentQA);
-                        currentQA = {};
-                        currentQA.question = text;
-                    }
-                    else
-                        currentQA.question += "\n" + text;
-                }
-            } else {
-                if (currentQA.question) {
-                    if (!currentQA.answer) {
-                        currentQA.answer = text;
-                    } else {
-                        currentQA.answer += "\n" + text;
-                    }
-                    // ls.push(currentQA);
-                    // currentQA = {};
-                }
-            }
-
-        }
-        if (currentQA.question && currentQA.answer) {
-            ls.push(currentQA);
-        }
-        api_key = localStorage.getItem("Gemini_api")
-        console.log(ls);
-        const res = await fetch(`/llm_call`, {
+    save_key.addEventListener("click", async () => {
+        const key = api_value.value
+        const userid = localStorage.getItem("userId")
+        console.log(key)
+        const res = await fetch("/save_key", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ "user_chats": ls, "api": api_key }),
-        });
+            body: JSON.stringify({ "userid": userid, "api_key": key }),
+        })
         const data = await res.json();
         console.log(data.success)
         if (data.success) {
-            overview_heading.innerText = "Overview"
-            loading.style.visibility = "hidden"
-            console.log(data.result)
-            ds = data.result[0]
-            console.log(ds)
-            Mistake = ds["Mistakes"]
-            Areas_to_Improve_data = ds["Areas_to_Improve"]
-            Rating_data = ds["Rating"]
-            Feedback_data = ds["Feedback"]
-            console.log(Mistake)
-            console.log(Areas_to_Improve_data)
-            console.log(Rating_data)
-            console.log(Feedback_data)
-            for (let msg of Mistake) {
-                const div = document.createElement("div")
-                div.className = "inserted"
-                div.innerText += msg
-                Mistakes.appendChild(div)
-            }
-            // rating
-            const ratinng = document.createElement("div")
-            ratinng.className = "inserted"
-            ratinng.innerText = Rating_data + "/10"
-            Rating.appendChild(ratinng)
-            // Areas to Improve
-            for (let msg of Areas_to_Improve_data) {
-                const span = document.createElement("div")
-                span.className = "inserted"
-                span.innerText += msg
-                Areas_to_Improve.appendChild(span)
-            }
-            //Feedback
-            const Feedbacks = document.createElement("div")
-            Feedbacks.classList.add("Feedback")
-            Feedbacks.classList.add("inserted")
-            Feedbacks.innerText = Feedback_data
-            Feedback.appendChild(Feedbacks)
+            localStorage.setItem("Gemini_api", key)
+            alert("key saved successfully please click evaluate response button again")
+            api_container.style.visibility = "hidden"
         }
         else {
-            alert("Error Evaluating Responses")
+            alert("some error has occured please retry")
+        }
+
+    })
+    evaluate_response.addEventListener("click", async () => {
+        const api = localStorage.getItem("Gemini_api")
+        if (!api) {
+            api_container.style.visibility = "visible"
+        }
+        else {
+            overview_heading.innerText = "Evaluating"
+            overview_container.style.visibility = "visible"
+            const messages = message_container.children
+            const ls = [];
+
+            let currentQA = {};
+
+            for (let msg of messages) {
+
+                const [speaker, text] = msg.innerText.split(": ");
+                console.log(text)
+                if (speaker === "Others") {
+                    // currentQA = { question: text };
+                    if (!currentQA.question) {
+                        currentQA.question = text;
+                    } else {
+                        if (currentQA.answer) {
+                            ls.push(currentQA);
+                            currentQA = {};
+                            currentQA.question = text;
+                        }
+                        else
+                            currentQA.question += "\n" + text;
+                    }
+                } else {
+                    if (currentQA.question) {
+                        if (!currentQA.answer) {
+                            currentQA.answer = text;
+                        } else {
+                            currentQA.answer += "\n" + text;
+                        }
+                        // ls.push(currentQA);
+                        // currentQA = {};
+                    }
+                }
+
+            }
+            console.log(currentQA)
+            if (currentQA.question && currentQA.answer) {
+                ls.push(currentQA);
+            }
+            api_key = localStorage.getItem("Gemini_api")
+            console.log(ls);
+            const res = await fetch(`/llm_call`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "user_chats": ls, "api": api_key }),
+            });
+            const data = await res.json();
+            console.log(data.success)
+            if (data.success) {
+                overview_heading.innerText = "Overview"
+                loading.style.visibility = "hidden"
+                console.log(data.result)
+                ds = data.result[0]
+                console.log(ds)
+                Mistake = ds["Mistakes"]
+                Areas_to_Improve_data = ds["Areas_to_Improve"]
+                Rating_data = ds["Rating"]
+                Feedback_data = ds["Feedback"]
+                console.log(Mistake)
+                console.log(Areas_to_Improve_data)
+                console.log(Rating_data)
+                console.log(Feedback_data)
+                for (let msg of Mistake) {
+                    const div = document.createElement("div")
+                    div.className = "inserted"
+                    div.innerText += msg
+                    Mistakes.appendChild(div)
+                }
+                // rating
+                const ratinng = document.createElement("div")
+                ratinng.className = "inserted"
+                ratinng.innerText = Rating_data + "/10"
+                Rating.appendChild(ratinng)
+                // Areas to Improve
+                for (let msg of Areas_to_Improve_data) {
+                    const span = document.createElement("div")
+                    span.className = "inserted"
+                    span.innerText += msg
+                    Areas_to_Improve.appendChild(span)
+                }
+                //Feedback
+                const Feedbacks = document.createElement("div")
+                Feedbacks.classList.add("Feedback")
+                Feedbacks.classList.add("inserted")
+                Feedbacks.innerText = Feedback_data
+                Feedback.appendChild(Feedbacks)
+            }
+            else {
+                alert("Error Evaluating Responses")
+            }
         }
     })
 })

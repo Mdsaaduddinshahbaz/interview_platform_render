@@ -31,6 +31,13 @@ def update_messages(meet_id,sender_id,message):
     res=messages.insert_one({"meet_id":meet_id,"sender_id":sender_id,"text":message,"timestamp":datetime.utcnow()})
     print("messageupdated",res.acknowledged)
 def list_previous_meetings(userid):
+    meetings.delete_many({
+    "$and": [
+        {"participants": userid},
+        {"participants": {"$size": 1}}
+    ]
+    })
+
     results=meetings.find({"participants":userid})
     meetings_list=[]
     for m in results:
@@ -98,4 +105,15 @@ def read(email):
 def update(email):
     result=users.update_one({"email":email},{"$set":{"password":5784}})
     print(result.matched_count)
+def save_key(userid,api_key):
+    print("in savkey")
+    userid=ObjectId(userid)
+    print(userid)
+    result = users.update_one(
+            {"_id": userid},
+            {"$set": {"api_key": api_key}}
+        )
+        
+    return result.modified_count > 0
+    
 # list_previous_meetings("69a959defa10620eb63cf31d")
