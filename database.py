@@ -41,6 +41,14 @@ def list_previous_meetings(userid):
         })
     return meetings_list
     # return list(results)
+def delete_meetings(meetid):
+    meetid=ObjectId(meetid)
+    res = meetings.find_one_and_delete({"_id": meetid})
+
+    if res:
+        return True
+    else:
+        return False
 def read_messages(meet_id):
     result=messages.find({"meet_id":meet_id}).sort("timestamp",1)
     # print(result.acknowledged)

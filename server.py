@@ -1,6 +1,6 @@
 from flask import render_template ,Flask,redirect,url_for,request
 from flask_socketio import SocketIO, join_room, emit
-from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages,list_previous_meetings,list_messages
+from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages,list_previous_meetings,list_messages,delete_meetings
 import uuid
 from evaluator import evaluate_responses
 from datetime import datetime
@@ -123,6 +123,16 @@ def messaged():
     if(results):
         return ({"success":True,"results":results})
     return ({"success":False})
+@app.post("/delete_meeting")
+def delete_meet():
+    data=request.get_json()
+    meet_id=data["meetid"]
+    res=delete_meetings(meet_id)
+    if(res):
+        return ({"success":True})
+    else:
+        return ({"success":False})
+
 @app.post("/llm_call")
 def fetch_llm_response():
     data=request.get_json()

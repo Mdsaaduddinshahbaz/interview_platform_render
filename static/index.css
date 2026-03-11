@@ -36,14 +36,19 @@ html, body {
     background: #67391d52;
 }
 .meet_container{
+    display: flex;
     width: 221px;
     margin-bottom: 10px;
         justify-self: center;
         margin-top: 20px;
-    border-radius: 50px;
+    border-radius: 7px;
     background: lightyellow;
 }
-
+#deletebtn{
+    background: transparent;
+    border: none;
+    width: 40px;
+}
 .meets{
         width: 100%;
     padding: 10px 8px;
@@ -83,7 +88,11 @@ html, body {
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 50px;
-    width: max-content;
+    width: fit-content;
+    max-width: 60%;
+    /* width: 62%; */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
     justify-self: right;
 }
 .left{
@@ -114,10 +123,16 @@ html, body {
     /* vertical-align: super; */
     justify-self: center;
     align-self: center;
-    margin-top: auto;
+    /* margin-top: auto; */
+}
+#heading{
+    display: flex;
+}
+#loading{
+    margin-top: 23px;
 }
 #overviewContainer{
-    /* visibility: hidden; */
+    visibility: hidden;
     border-radius: 51px;
     justify-self: center;
     align-self: center;

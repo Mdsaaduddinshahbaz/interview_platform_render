@@ -4,10 +4,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const message_container = document.getElementById("chat_message")
     const evaluate_response = document.getElementById("triggerEvaluation")
     const overview_container = document.getElementById("overviewContainer")
+    const overview_heading = document.getElementById("overviewHeading")
+    const loading = document.getElementById("loading")
     const Mistakes = document.getElementById("Mistakes")
     const Rating = document.getElementById("Rating")
     const Areas_to_Improve = document.getElementById("Areas_to_Improve")
     const Feedback = document.getElementById("Feedback")
+    const deletebtn = document.getElementById("deletebtn")
     userid = localStorage.getItem("userId")
     const res = await fetch(`/list_meetings`, {
         method: "POST",
@@ -25,7 +28,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             meeting_container.className = "meet_container"
             meeting.innerText = res.meet_id
             meeting_container.appendChild(meeting)
+            let deletebtn = document.createElement("button")
+            deletebtn.id = "deletebtn"
+            deletebtn.innerHTML = "<img src='../static/delete_icon.svg'>"
             // sidebar.appendChild(meeting)
+            meeting_container.appendChild(deletebtn)
             sidebar.appendChild(meeting_container)
         });
     }
@@ -35,9 +42,32 @@ document.addEventListener("DOMContentLoaded", async () => {
         sidebar.appendChild(meeting)
     }
     // const meet_btn=document.getElementsByClassName("meetsssss")
+    // deletebtn.addEventListener("click", async (e) => {
+    //     if (e.target.id.includes("meets")) {
+    //         console.log(e.target.innerText)
+    //     }
+    // })
     sidebar.addEventListener("click", async (e) => {
+        if (e.target.closest("#deletebtn")) {
+
+            const container = e.target.closest(".meet_container")
+            const meetId = container.querySelector(".meets").innerText
+            console.log(meetId)
+            const res = await fetch(`/delete_meeting`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "meetid": meetId }),
+            });
+            const data = await res.json();
+            console.log(data.success)
+            if (data.success) {
+                alert("meet with " + meetId+ " got deleted")
+                container.remove()
+            }
+        }
         if (e.target.classList.contains("meets")) {
             message_container.innerHTML = "";
+            overview_container.style.visibility = "hidden"
             document.querySelectorAll(".inserted").forEach(div => {
                 div.innerText = "";
             });
@@ -118,10 +148,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         // window.location.href = "/meet";
     })
     evaluate_response.addEventListener("click", async () => {
-        overview_container.style.visibility="visible"
+        overview_heading.innerText = "Evaluating"
+        overview_container.style.visibility = "visible"
         const messages = message_container.children
         const ls = [];
-        
+
         let currentQA = {};
 
         for (let msg of messages) {
@@ -167,6 +198,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const data = await res.json();
         console.log(data.success)
         if (data.success) {
+            overview_heading.innerText = "Overview"
+            loading.style.visibility = "hidden"
             console.log(data.result)
             ds = data.result[0]
             console.log(ds)
