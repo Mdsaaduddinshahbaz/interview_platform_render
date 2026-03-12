@@ -4,6 +4,7 @@ from database import create_new_user,check_existing_user,create_new_meeting,upda
 import uuid
 from evaluator import evaluate_responses
 from datetime import datetime
+import os
 app=Flask(__name__)
 socketio = SocketIO(app)
 random_string=""
