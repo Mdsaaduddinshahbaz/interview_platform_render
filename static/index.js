@@ -185,6 +185,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     })
     evaluate_response.addEventListener("click", async () => {
+        evaluate_response.style.visibility="hidden"
         const api = localStorage.getItem("Gemini_api")
         if (!api) {
             api_container.style.visibility = "visible"
@@ -239,7 +240,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 body: JSON.stringify({ "user_chats": ls, "api": api_key }),
             });
             const data = await res.json();
-            console.log(data.success)
+            console.log(data)
             if (data.success) {
                 overview_heading.innerText = "Overview"
                 loading.style.visibility = "hidden"
@@ -257,7 +258,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 for (let msg of Mistake) {
                     const div = document.createElement("div")
                     div.className = "inserted"
-                    div.innerText += msg
+                    div.innerText += "--> "+msg
                     Mistakes.appendChild(div)
                 }
                 // rating
@@ -280,6 +281,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 Feedback.appendChild(Feedbacks)
             }
             else {
+                evaluate_response.style.visibility="visible"
                 alert("Error Evaluating Responses")
             }
         }

@@ -16,6 +16,7 @@ db=client["Interview"]
 users=db["Users"]
 meetings=db["meetings"]
 messages=db["messsages"]
+llm_results=db["llm_results"]
 def create_new_meeting(participants_name:list ,partcipants:list):
     print("participants in database.py",partcipants)
     meet_id=meetings.insert_one({"participants_name":participants_name,"participants":partcipants,"created_time":datetime.utcnow()})
@@ -115,5 +116,7 @@ def save_key(userid,api_key):
         )
         
     return result.modified_count > 0
-    
+def add_llm_result_response(meet_id,mistakes,Rating,Areas_to_improve,Feedback):
+    llm_results.insert_one({"meet_id":meet_id,"mistakes":mistakes,"Rating":Rating,"Areas_to_improve":Areas_to_improve,"Feedback":Feedback})
+
 # list_previous_meetings("69a959defa10620eb63cf31d")

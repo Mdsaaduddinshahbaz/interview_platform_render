@@ -27,7 +27,7 @@
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 50px;
-    width: max-content;
+    /* width: max-content; */
     justify-self: left;
     max-width: 60%;
     overflow-wrap: break-word;

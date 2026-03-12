@@ -1,6 +1,6 @@
 from flask import render_template ,Flask,redirect,url_for,request
 from flask_socketio import SocketIO, join_room, emit
-from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages,list_previous_meetings,list_messages,delete_meetings,save_key
+from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages,list_previous_meetings,list_messages,delete_meetings,save_key,add_llm_result_response
 import uuid
 from evaluator import evaluate_responses
 from datetime import datetime
@@ -195,20 +195,23 @@ def delete_meet():
 
 @app.post("/llm_call")
 def fetch_llm_response():
-    try:
-        data=request.get_json()
-        user_data=data["user_chats"]
-        api=data["api"]
-        print(user_data)
-        responses=[]
-        for response in user_data:
-            print("response=",type(response))
-            responses.append(evaluate_responses(response["question"],response["answer"],api))
-        if(responses):
-            return({"success":True,"result":responses})
-        return({"success":False})
-    except:
-        return ({"success":False})
+    # try:
+    data=request.get_json()
+    user_data=data["user_chats"]
+    api=data["api"]
+    # meet_id=data["meetid"]
+    print(user_data)
+    responses=[]
+    # for response in user_data:
+    #     print("response=",type(response))
+    #     responses.append(evaluate_responses(response["question"],response["answer"],api))
+    responses.append(evaluate_responses(user_data,api))
+    if(responses):
+        # add_llm_result_response(meet_id,responses["Mistakes"],responses["Rating"],responses["Areas_to_Improve"],responses["Feedback"])
+        return({"success":True,"result":responses})
+    return({"success":False})
+    # except:
+    #     return ({"success":False})
 @app.post("/save_key")
 def savekey():
     try:

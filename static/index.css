@@ -68,6 +68,9 @@ html, body {
 .InterviewBtn{
     justify-self: right;
 }
+.inserted{
+    margin-bottom: 11px;
+}
 .chat_message{
     height: 100vh;
 }
@@ -101,7 +104,11 @@ html, body {
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 50px;
-    width: max-content;
+    /* width: max-content; */
+    max-width: 60%;
+    /* width: 62%; */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
     justify-self: left;
 }
 #chat_message{
