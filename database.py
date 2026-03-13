@@ -44,6 +44,7 @@ def list_previous_meetings(userid):
     for m in results:
         meetings_list.append({
             "meet_id": str(m["_id"]),
+            "is_evaluated":m["is_evaluated"],
             "participants_name":m["participants_name"],
             "participants": m["participants"],
             "created_time": m["created_time"].isoformat()
@@ -78,7 +79,10 @@ def list_messages(meet_id):
             "created_time": m["timestamp"].isoformat()
         })
     return meetings_list
-
+def return_llm_response(meet_id):
+    result=llm_results.find_one({"meet_id":meet_id},{"_id":0})
+    return result
+return_llm_response("69b2cd0f5633711d19789254")
 def create_new_user(email, password,username):
     user = users.find_one({"email": email})
 
@@ -117,6 +121,7 @@ def save_key(userid,api_key):
         
     return result.modified_count > 0
 def add_llm_result_response(meet_id,mistakes,Rating,Areas_to_improve,Feedback):
+    meetings.find_one_and_update({"_id":ObjectId(meet_id)},{"$set":{"is_evaluated":True}})
     llm_results.insert_one({"meet_id":meet_id,"mistakes":mistakes,"Rating":Rating,"Areas_to_improve":Areas_to_improve,"Feedback":Feedback})
-
+# def check_previous_evaluation(meet_id):
 # list_previous_meetings("69a959defa10620eb63cf31d")

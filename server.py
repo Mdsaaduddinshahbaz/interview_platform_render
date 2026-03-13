@@ -1,6 +1,6 @@
 from flask import render_template ,Flask,redirect,url_for,request
 from flask_socketio import SocketIO, join_room, emit
-from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages,list_previous_meetings,list_messages,delete_meetings,save_key,add_llm_result_response
+from database import create_new_user,check_existing_user,create_new_meeting,update_participants_in_meeting,update_messages,read_messages,list_previous_meetings,list_messages,delete_meetings,save_key,add_llm_result_response,return_llm_response
 import uuid
 from evaluator import evaluate_responses
 from datetime import datetime
@@ -155,28 +155,34 @@ def handle_message(data):
 # @socketio.on("push_message")
 @app.post("/list_meetings")
 def list_meetingss():
-    try:
-        data=request.get_json()
-        userid=data["userid"]
-        res=list_previous_meetings(userid)
-        # if not res:
-        #     return {"success":False}
-        # else:
-        if res:
-            return {"success":True,"results":res}
-        return {"success":False}
-    except:
-        return({"success":False})
+    # try:
+    data=request.get_json()
+    userid=data["userid"]
+    res=list_previous_meetings(userid)
+    # if not res:
+    #     return {"success":False}
+    # else:
+    if res:
+        return {"success":True,"results":res}
+    return {"success":False}
+    # except:
+    #     return({"success":False})
 @app.post("/list_messages")
 def messaged():
     try:
         data=request.get_json()
         meet_id=data["meetid"]
+        is_evaluated=data["is_evaluated"]
         print("meet_id=",meet_id)
+        print("is_evaluated=",is_evaluated)
         results=list_messages(meet_id)
+        if(is_evaluated=="true"):
+            llm_results=return_llm_response(meet_id)
+        else:
+            llm_results=-1
         print("results=",results)
         if(results):
-            return ({"success":True,"results":results})
+            return ({"success":True,"results":results,"llm_results":llm_results})
         return ({"success":False})
     except:
         return({"success":False})
@@ -199,6 +205,7 @@ def fetch_llm_response():
     data=request.get_json()
     user_data=data["user_chats"]
     api=data["api"]
+    meetid=data["meetid"]
     # meet_id=data["meetid"]
     print(user_data)
     responses=[]
@@ -206,8 +213,9 @@ def fetch_llm_response():
     #     print("response=",type(response))
     #     responses.append(evaluate_responses(response["question"],response["answer"],api))
     responses.append(evaluate_responses(user_data,api))
+    print(responses)
     if(responses):
-        # add_llm_result_response(meet_id,responses["Mistakes"],responses["Rating"],responses["Areas_to_Improve"],responses["Feedback"])
+        add_llm_result_response(meetid,responses[0]["Mistakes"],responses[0]["Rating"],responses[0]["Areas_to_Improve"],responses[0]["Feedback"])
         return({"success":True,"result":responses})
     return({"success":False})
     # except:

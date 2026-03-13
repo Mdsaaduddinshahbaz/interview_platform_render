@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    let uid=localStorage.getItem("userId")
-    if(!uid) window.location.href="/login"
+    let uid = localStorage.getItem("userId")
+    if (!uid) window.location.href = "/login"
     const startInterview = document.getElementById("startInterview")
     const sidebar = document.getElementById("list_previous_chats")
     const message_container = document.getElementById("chat_message")
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     const data = await res.json();
-    console.log(data.success)
+    console.log(data)
     if (data.success) {
         const username = localStorage.getItem("username")
         data.results.forEach(res => {
@@ -38,6 +38,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     meeting.innerText = "interview with " + partcipant_name
                 }
             }
+            evaluate_response.setAttribute("is_evaluated", res.is_evaluated)
+            meeting.setAttribute("is_evaluated", res.is_evaluated)
             meeting.setAttribute("meet_id", res.meet_id)
             // meeting.innerText = res.meet_id
             meeting_container.appendChild(meeting)
@@ -86,14 +88,63 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             // overview_container.innerHTML="";
             console.log("Meeting clicked:", e.target.innerText);
+            const meetid = e.target.getAttribute("meet_id");
+            const is_evaluated = e.target.getAttribute("is_evaluated")
+            console.log("is_evaluated" + is_evaluated)
+            if (is_evaluated === "true") {
+                console.log("true")
+                evaluate_response.style.visibility = "hidden"
+            }
+            else{
+                evaluate_response.style.visibility = "visible"
+            }
             const res = await fetch(`/list_messages`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ "meetid": e.target.getAttribute("meet_id") }),
+                body: JSON.stringify({ "meetid": meetid, "is_evaluated": is_evaluated }),
             });
             const data = await res.json();
-            console.log(data.success)
+            console.log(data.llm_results)
             if (data.success) {
+                overview_container.style.visibility = "visible"
+                overview_heading.innerText = "Overview"
+                loading.style.visibility = "hidden"
+                // console.log(data.result)
+                ds = data.llm_results
+                console.log(ds)
+                Mistake = ds["mistakes"]
+                Areas_to_Improve_data = ds["Areas_to_improve"]
+                Rating_data = ds["Rating"]
+                Feedback_data = ds["Feedback"]
+                console.log(Mistake)
+                console.log(Areas_to_Improve_data)
+                console.log(Rating_data)
+                console.log(Feedback_data)
+                for (let msg of Mistake) {
+                    const div = document.createElement("div")
+                    div.className = "inserted"
+                    div.innerText += "--> " + msg
+                    Mistakes.appendChild(div)
+                }
+                // rating
+                const ratinng = document.createElement("div")
+                ratinng.className = "inserted"
+                ratinng.innerText = Rating_data + "/10"
+                Rating.appendChild(ratinng)
+                // Areas to Improve
+                for (let msg of Areas_to_Improve_data) {
+                    const span = document.createElement("div")
+                    span.className = "inserted"
+                    span.innerText += msg
+                    Areas_to_Improve.appendChild(span)
+                }
+                //Feedback
+                const Feedbacks = document.createElement("div")
+                Feedbacks.classList.add("Feedback")
+                Feedbacks.classList.add("inserted")
+                Feedbacks.innerText = Feedback_data
+                Feedback.appendChild(Feedbacks)
+                evaluate_response.setAttribute("meet_id", meetid)
                 console.log(data.results)
                 currentUserId = localStorage.getItem("userId")
                 console.log("currentid" + " " + currentUserId)
@@ -117,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         // document.body.append(container)
                     }
                     message_container.appendChild(container)
-                    evaluate_response.style.visibility = "visible"
+                    // evaluate_response.style.visibility = "visible"
                 })
                 // if (currentUserId === data.sender_id) {
                 //     div.className = "userresponse";
@@ -185,7 +236,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     })
     evaluate_response.addEventListener("click", async () => {
-        evaluate_response.style.visibility="hidden"
+
+        evaluate_response.style.visibility = "hidden"
         const api = localStorage.getItem("Gemini_api")
         if (!api) {
             api_container.style.visibility = "visible"
@@ -234,10 +286,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             api_key = localStorage.getItem("Gemini_api")
             console.log(ls);
+            const meet_id = evaluate_response.getAttribute("meet_id")
             const res = await fetch(`/llm_call`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ "user_chats": ls, "api": api_key }),
+                body: JSON.stringify({ "user_chats": ls, "api": api_key, "meetid": meet_id }),
             });
             const data = await res.json();
             console.log(data)
@@ -258,7 +311,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 for (let msg of Mistake) {
                     const div = document.createElement("div")
                     div.className = "inserted"
-                    div.innerText += "--> "+msg
+                    div.innerText += "--> " + msg
                     Mistakes.appendChild(div)
                 }
                 // rating
@@ -281,7 +334,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 Feedback.appendChild(Feedbacks)
             }
             else {
-                evaluate_response.style.visibility="visible"
+                evaluate_response.style.visibility = "visible"
                 alert("Error Evaluating Responses")
             }
         }

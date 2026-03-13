@@ -1,6 +1,7 @@
 const recognition = new webkitSpeechRecognition();
 const userResponse = document.getElementById("userresponse")
 const person1Container = document.getElementById("container");
+const dialogue_container=document.getElementById("dialogue")
 function generateUserID() {
     return crypto.randomUUID();
 }
@@ -59,7 +60,7 @@ socket.on("receive_message", function (data) {
         container.appendChild(div);
         document.body.append(container)
     }
-
+    dialogue_container.style.marginTop="10px"
     // container.appendChild(div);
 });
 // recognition.onresult = function(event) {
