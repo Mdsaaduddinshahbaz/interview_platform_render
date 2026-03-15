@@ -4,6 +4,7 @@ from database import create_new_user,check_existing_user,create_new_meeting,upda
 import uuid
 from evaluator import evaluate_responses
 from datetime import datetime
+import os
 app=Flask(__name__)
 socketio = SocketIO(app)
 random_string=""
@@ -236,5 +237,5 @@ def savekey():
     except:
         return ({"success":False})
 if __name__ == "__main__":
-    # socketio.run(app, debug=True)
-    socketio.run(app, host="0.0.0.0" , port=5000 ,debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, host="0.0.0.0", port=port)
