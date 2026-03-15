@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const Areas_to_Improve = document.getElementById("Areas_to_Improve")
     const Feedback = document.getElementById("Feedback")
     const deletebtn = document.getElementById("deletebtn")
+    const footer = document.getElementById("footer")
     userid = localStorage.getItem("userId")
     const res = await fetch(`/list_meetings`, {
         method: "POST",
@@ -91,13 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const meetid = e.target.getAttribute("meet_id");
             const is_evaluated = e.target.getAttribute("is_evaluated")
             console.log("is_evaluated" + is_evaluated)
-            if (is_evaluated === "true") {
-                console.log("true")
-                evaluate_response.style.visibility = "hidden"
-            }
-            else{
-                evaluate_response.style.visibility = "visible"
-            }
+
             const res = await fetch(`/list_messages`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -106,44 +101,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const data = await res.json();
             console.log(data.llm_results)
             if (data.success) {
-                overview_container.style.visibility = "visible"
-                overview_heading.innerText = "Overview"
-                loading.style.visibility = "hidden"
-                // console.log(data.result)
-                ds = data.llm_results
-                console.log(ds)
-                Mistake = ds["mistakes"]
-                Areas_to_Improve_data = ds["Areas_to_improve"]
-                Rating_data = ds["Rating"]
-                Feedback_data = ds["Feedback"]
-                console.log(Mistake)
-                console.log(Areas_to_Improve_data)
-                console.log(Rating_data)
-                console.log(Feedback_data)
-                for (let msg of Mistake) {
-                    const div = document.createElement("div")
-                    div.className = "inserted"
-                    div.innerText += "--> " + msg
-                    Mistakes.appendChild(div)
-                }
-                // rating
-                const ratinng = document.createElement("div")
-                ratinng.className = "inserted"
-                ratinng.innerText = Rating_data + "/10"
-                Rating.appendChild(ratinng)
-                // Areas to Improve
-                for (let msg of Areas_to_Improve_data) {
-                    const span = document.createElement("div")
-                    span.className = "inserted"
-                    span.innerText += msg
-                    Areas_to_Improve.appendChild(span)
-                }
-                //Feedback
-                const Feedbacks = document.createElement("div")
-                Feedbacks.classList.add("Feedback")
-                Feedbacks.classList.add("inserted")
-                Feedbacks.innerText = Feedback_data
-                Feedback.appendChild(Feedbacks)
+
                 evaluate_response.setAttribute("meet_id", meetid)
                 console.log(data.results)
                 currentUserId = localStorage.getItem("userId")
@@ -168,8 +126,56 @@ document.addEventListener("DOMContentLoaded", async () => {
                         // document.body.append(container)
                     }
                     message_container.appendChild(container)
-                    // evaluate_response.style.visibility = "visible"
                 })
+                    if (is_evaluated === "true") {
+                        console.log("true")
+                        // evaluate_response.style.visibility = "hidden"
+                        footer.style.display = "none"
+                        overview_container.style.visibility = "visible"
+                        overview_heading.innerText = "Overview"
+                        loading.style.visibility = "hidden"
+                        // console.log(data.result)
+                        ds = data.llm_results
+                        console.log(ds)
+                        Mistake = ds["mistakes"]
+                        Areas_to_Improve_data = ds["Areas_to_improve"]
+                        Rating_data = ds["Rating"]
+                        Feedback_data = ds["Feedback"]
+                        console.log(Mistake)
+                        console.log(Areas_to_Improve_data)
+                        console.log(Rating_data)
+                        console.log(Feedback_data)
+                        for (let msg of Mistake) {
+                            const div = document.createElement("div")
+                            div.className = "inserted"
+                            div.innerText += "--> " + msg
+                            Mistakes.appendChild(div)
+                        }
+                        // rating
+                        const ratinng = document.createElement("div")
+                        ratinng.className = "inserted"
+                        ratinng.innerText = Rating_data + "/10"
+                        Rating.appendChild(ratinng)
+                        // Areas to Improve
+                        for (let msg of Areas_to_Improve_data) {
+                            const span = document.createElement("div")
+                            span.className = "inserted"
+                            span.innerText += msg
+                            Areas_to_Improve.appendChild(span)
+                        }
+                        //Feedback
+                        const Feedbacks = document.createElement("div")
+                        Feedbacks.classList.add("Feedback")
+                        Feedbacks.classList.add("inserted")
+                        Feedbacks.innerText = Feedback_data
+                        Feedback.appendChild(Feedbacks)
+                    }
+                    else {
+                        evaluate_response.style.visibility = "visible"
+                        footer.style.display = "block"
+                    }
+                    // message_container.appendChild(container)
+                    // evaluate_response.style.visibility = "visible"
                 // if (currentUserId === data.sender_id) {
                 //     div.className = "userresponse";
                 //     div.className = "right"
@@ -295,6 +301,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const data = await res.json();
             console.log(data)
             if (data.success) {
+                footer.style.display="none"
                 overview_heading.innerText = "Overview"
                 loading.style.visibility = "hidden"
                 console.log(data.result)
@@ -335,6 +342,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             else {
                 evaluate_response.style.visibility = "visible"
+                footer.style.display="block"
                 alert("Error Evaluating Responses")
             }
         }
