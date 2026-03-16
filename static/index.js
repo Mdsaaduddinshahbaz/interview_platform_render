@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     const data = await res.json();
-    console.log(data)
+    //console.log(data)
     if (data.success) {
         const username = localStorage.getItem("username")
         data.results.forEach(res => {
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             meeting.className = "meets"
             meeting_container.className = "meet_container"
             for (let partcipant_name of res.participants_name) {
-                console.log(partcipant_name)
+                //console.log(partcipant_name)
                 if (username !== partcipant_name) {
                     meeting.innerText = "interview with " + partcipant_name
                 }
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // const meet_btn=document.getElementsByClassName("meetsssss")
     // deletebtn.addEventListener("click", async (e) => {
     //     if (e.target.id.includes("meets")) {
-    //         console.log(e.target.innerText)
+    //         //console.log(e.target.innerText)
     //     }
     // })
     sidebar.addEventListener("click", async (e) => {
@@ -68,14 +68,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const container = e.target.closest(".meet_container")
             const meetId = container.querySelector(".meets").getAttribute("meet_id")
-            console.log(meetId)
+            //console.log(meetId)
             const res = await fetch(`/delete_meeting`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ "meetid": meetId }),
             });
             const data = await res.json();
-            console.log(data.success)
+            //console.log(data.success)
             if (data.success) {
                 alert("meet with " + meetId + " got deleted")
                 container.remove()
@@ -88,10 +88,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 div.innerText = "";
             });
             // overview_container.innerHTML="";
-            console.log("Meeting clicked:", e.target.innerText);
+            //console.log("Meeting clicked:", e.target.innerText);
             const meetid = e.target.getAttribute("meet_id");
             const is_evaluated = e.target.getAttribute("is_evaluated")
-            console.log("is_evaluated" + is_evaluated)
+            //console.log("is_evaluated" + is_evaluated)
 
             const res = await fetch(`/list_messages`, {
                 method: "POST",
@@ -99,18 +99,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 body: JSON.stringify({ "meetid": meetid, "is_evaluated": is_evaluated }),
             });
             const data = await res.json();
-            console.log(data.llm_results)
+            //console.log(data.llm_results)
             if (data.success) {
 
                 evaluate_response.setAttribute("meet_id", meetid)
-                console.log(data.results)
+                //console.log(data.results)
                 currentUserId = localStorage.getItem("userId")
-                console.log("currentid" + " " + currentUserId)
+                //console.log("currentid" + " " + currentUserId)
                 data.results.forEach(res => {
                     const container = document.createElement("container");
                     container.className = "userresponsecontainer"
                     const div = document.createElement("div");
-                    console.log("userid" + " " + res.sender_id)
+                    //console.log("userid" + " " + res.sender_id)
                     if (currentUserId === res.sender_id) {
                         div.className = "userresponse";
                         div.className = "right"
@@ -128,23 +128,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                     message_container.appendChild(container)
                 })
                     if (is_evaluated === "true") {
-                        console.log("true")
+                        //console.log("true")
                         // evaluate_response.style.visibility = "hidden"
                         footer.style.display = "none"
                         overview_container.style.visibility = "visible"
                         overview_heading.innerText = "Overview"
                         loading.style.visibility = "hidden"
-                        // console.log(data.result)
+                        // //console.log(data.result)
                         ds = data.llm_results
-                        console.log(ds)
+                        //console.log(ds)
                         Mistake = ds["mistakes"]
                         Areas_to_Improve_data = ds["Areas_to_improve"]
                         Rating_data = ds["Rating"]
                         Feedback_data = ds["Feedback"]
-                        console.log(Mistake)
-                        console.log(Areas_to_Improve_data)
-                        console.log(Rating_data)
-                        console.log(Feedback_data)
+                        //console.log(Mistake)
+                        //console.log(Areas_to_Improve_data)
+                        //console.log(Rating_data)
+                        //console.log(Feedback_data)
                         for (let msg of Mistake) {
                             const div = document.createElement("div")
                             div.className = "inserted"
@@ -198,19 +198,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
     startInterview.addEventListener("click", async () => {
-        console.log("clicked")
+        //console.log("clicked")
         user_id = localStorage.getItem("userId")
         username = localStorage.getItem("username")
-        console.log(username)
+        //console.log(username)
         const res = await fetch(`/validate_meet`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ "participants_name": [username], "participants": [user_id] }),
         });
         const data = await res.json();
-        console.log(data.success)
+        //console.log(data.success)
         if (data.success) {
-            console.log(data.meet_id)
+            //console.log(data.meet_id)
             // socket.emit("join", { meet_id: data.meet_id, userid: user_id });
             window.location.href = `/meet/${data.meet_id}`;
         }
@@ -223,14 +223,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     save_key.addEventListener("click", async () => {
         const key = api_value.value
         const userid = localStorage.getItem("userId")
-        console.log(key)
+        //console.log(key)
         const res = await fetch("/save_key", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ "userid": userid, "api_key": key }),
         })
         const data = await res.json();
-        console.log(data.success)
+        //console.log(data.success)
         if (data.success) {
             localStorage.setItem("Gemini_api", key)
             alert("key saved successfully please click evaluate response button again")
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             for (let msg of messages) {
 
                 const [speaker, text] = msg.innerText.split(": ");
-                console.log(text)
+                //console.log(text)
                 if (speaker === "Others") {
                     // currentQA = { question: text };
                     if (!currentQA.question) {
@@ -286,12 +286,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
 
             }
-            console.log(currentQA)
+            //console.log(currentQA)
             if (currentQA.question && currentQA.answer) {
                 ls.push(currentQA);
             }
             api_key = localStorage.getItem("Gemini_api")
-            console.log(ls);
+            //console.log(ls);
             const meet_id = evaluate_response.getAttribute("meet_id")
             const res = await fetch(`/llm_call`, {
                 method: "POST",
@@ -299,22 +299,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                 body: JSON.stringify({ "user_chats": ls, "api": api_key, "meetid": meet_id }),
             });
             const data = await res.json();
-            console.log(data)
+            //console.log(data)
             if (data.success) {
                 footer.style.display="none"
                 overview_heading.innerText = "Overview"
                 loading.style.visibility = "hidden"
-                console.log(data.result)
+                //console.log(data.result)
                 ds = data.result[0]
-                console.log(ds)
+                //console.log(ds)
                 Mistake = ds["Mistakes"]
                 Areas_to_Improve_data = ds["Areas_to_Improve"]
                 Rating_data = ds["Rating"]
                 Feedback_data = ds["Feedback"]
-                console.log(Mistake)
-                console.log(Areas_to_Improve_data)
-                console.log(Rating_data)
-                console.log(Feedback_data)
+                //console.log(Mistake)
+                //console.log(Areas_to_Improve_data)
+                //console.log(Rating_data)
+                //console.log(Feedback_data)
                 for (let msg of Mistake) {
                     const div = document.createElement("div")
                     div.className = "inserted"

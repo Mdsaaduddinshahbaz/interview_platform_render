@@ -25,9 +25,9 @@ socket.on("connect", async () => {
     //     body: JSON.stringify({ "participants": [user_id] }),
     // });
     // const data = await res.json();
-    // console.log(data.success)
+    // //console.log(data.success)
     // if(data.success){
-    //     console.log(data.meet_id)
+    //     //console.log(data.meet_id)
     // }
     // else {
     //     alert("theres some problem")
@@ -44,8 +44,8 @@ socket.on("receive_message", function (data) {
     container.className = "userresponsecontainer"
     const div = document.createElement("div");
     currentUserId = localStorage.getItem("userId")
-    console.log("currentid"+" "+currentUserId)
-    console.log("userid"+" "+data.userId)
+    //console.log("currentid"+" "+currentUserId)
+    //console.log("userid"+" "+data.userId)
     if (currentUserId === data.userId) {
         div.className = "userresponse";
         div.className = "right"
@@ -71,7 +71,7 @@ socket.on("receive_message", function (data) {
 //         message: transcript
 //     });
 // };
-console.log("button clicked")
+//console.log("button clicked")
 // let userId = localStorage.getItem("userId");
 
 // if (!userId) {
@@ -80,7 +80,7 @@ console.log("button clicked")
 // }
 recognition.onresult = function (event) {
     const transcript = event.results[0][0].transcript;
-    console.log(transcript);
+    //console.log(transcript);
 
     // const container = document.createElement("person1");
     // const divs = document.createElement("div");
@@ -91,7 +91,7 @@ recognition.onresult = function (event) {
     // container.appendChild(divs);
     // document.body.appendChild(container)
     userId = localStorage.getItem("userId");
-    console.log(userId)
+    //console.log(userId)
 
     socket.emit("send_message", {
         meet_id: meet_id,
@@ -102,7 +102,7 @@ recognition.onresult = function (event) {
 };
 // recognition.onresult = function(event) {
 //     const transcript = event.results[0][0].transcript;
-//     console.log(transcript)
+//     //console.log(transcript)
 //     // userResponse.innerText += transcript;
 //     const divs=document.createElement("div")
 //     divs.className = "userresponse";

@@ -21,10 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update as user types
     input.addEventListener("input", (e) => {
       formData[fieldName] = e.target.value;
-      console.log("Updated formData:", formData);
+      //console.log("Updated formData:", formData);
     });
   });
-console.log(formData)
+//console.log(formData)
   // Handle form submit
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -36,16 +36,16 @@ console.log(formData)
       });
 
       const data = await res.json();
-      console.log(data.success)
+      //console.log(data.success)
       if(data.success==="Not_found"){
         alert("user credentials not found")
       }
       else if(data.success){
-        console.log(data)
+        //console.log(data)
       alert(data.message || "Welcome!");
       localStorage.setItem("username",data.username)
       localStorage.setItem("userId",data.user_id)
-      console.log(data.username)
+      //console.log(data.username)
       window.location.href="/home"
       }
       else{
