@@ -35,13 +35,13 @@ def signup():
 @app.post("/signup_user")
 def signup_user():
     try:
-        # print(signup)
+        # #print(signup)
         data=request.get_json()
-        print("data in signup",data)
+        #print("data in signup",data)
         email=data["email"]
         password=data["password"]
         username=data["username"]
-        # print(email)
+        # #print(email)
         res=create_new_user(email,password,username)
         if(res):
             return ({"success":True})
@@ -55,14 +55,14 @@ def validate():
         data=request.get_json()
         if not data:
             return ({"success":False})
-        print(data)
+        #print(data)
         res=check_existing_user(data["email"],data["password"])
-        print(res)
+        #print(res)
         if(res["success"]==False): return({"success":False})
         elif(res["success"]==True): 
             userid=str(res["userid"])
             username=res["username"]
-            print(userid)
+            #print(userid)
             return ({"success":True,"user_id":userid,"username":username})
         else: return({"success":"Not_found"})
     except:
@@ -72,7 +72,7 @@ def validate_meet_request():
     try:
         data=request.get_json()
         if not data : return ({"success":False})
-        print("data in validate_meet",data)
+        #print("data in validate_meet",data)
         meetid=create_new_meeting(data["participants_name"],data["participants"])
         meetid=str(meetid)
         return ({"success":True,"meet_id":meetid})
@@ -105,17 +105,17 @@ def join_meet(meet_id):
 @socketio.on("join")
 def handle_join(data):
     try:
-        print("new user connected")
+        #print("new user connected")
         meet_id = data["meet_id"]
         user_id=data["userid"]
         username=data["username"]
         join_room(meet_id)
-        print("userid=",user_id)
+        #print("userid=",user_id)
         update_participants_in_meeting(user_id,meet_id,username)
         # Send previous messages to new user
         result=read_messages(meet_id)
         # for msg in result:
-        #     print(msg["text"])
+        #     #print(msg["text"])
         #     emit("receive_message", msg["text"])
         for msg in result:
             emit("receive_message", {
@@ -132,7 +132,7 @@ def handle_join(data):
 @socketio.on("send_message")
 def handle_message(data):
     try:
-        print("in handle messages")
+        #print("in handle messages")
         meet_id = data["meet_id"]
 
         message_obj = {
@@ -174,14 +174,14 @@ def messaged():
         data=request.get_json()
         meet_id=data["meetid"]
         is_evaluated=data["is_evaluated"]
-        print("meet_id=",meet_id)
-        print("is_evaluated=",is_evaluated)
+        #print("meet_id=",meet_id)
+        #print("is_evaluated=",is_evaluated)
         results=list_messages(meet_id)
         if(is_evaluated=="true"):
             llm_results=return_llm_response(meet_id)
         else:
             llm_results=-1
-        print("results=",results)
+        #print("results=",results)
         if(results):
             return ({"success":True,"results":results,"llm_results":llm_results})
         return ({"success":False})
@@ -208,13 +208,13 @@ def fetch_llm_response():
     api=data["api"]
     meetid=data["meetid"]
     # meet_id=data["meetid"]
-    print(user_data)
+    #print(user_data)
     responses=[]
     # for response in user_data:
-    #     print("response=",type(response))
+    #     #print("response=",type(response))
     #     responses.append(evaluate_responses(response["question"],response["answer"],api))
     responses.append(evaluate_responses(user_data,api))
-    print(responses)
+    #print(responses)
     if(responses):
         add_llm_result_response(meetid,responses[0]["Mistakes"],responses[0]["Rating"],responses[0]["Areas_to_Improve"],responses[0]["Feedback"])
         return({"success":True,"result":responses})
@@ -227,9 +227,9 @@ def savekey():
         data=request.get_json()
         user_id=data["userid"]
         api_key=data["api_key"]
-        print("use",user_id)
+        #print("use",user_id)
         res=save_key(user_id,api_key)
-        print(res)
+        #print(res)
         if(res):
             return ({"success":True})
         else:

@@ -2,7 +2,7 @@
 // import { BASEURL } from "../my_extension/config";
 async function loadConfig() {
   const { BASEURL } = await import("../my_extension/config");
-  console.log(BASEURL);
+  //console.log(BASEURL);
   return BASEURL
 }
 const BASEURL=loadConfig()
