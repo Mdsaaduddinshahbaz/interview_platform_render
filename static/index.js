@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     else {
                         div.className = "userresponse";
                         div.className = "left"
-                        div.innerText = "Others" + ": " + res.text;
+                        div.innerText = "Interviewer" + ": " + res.text;
                         container.appendChild(div);
                         // document.body.append(container)
                     }
@@ -260,7 +260,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 const [speaker, text] = msg.innerText.split(": ");
                 //console.log(text)
-                if (speaker === "Others") {
+                if (speaker === "Interviewer") {
                     // currentQA = { question: text };
                     if (!currentQA.question) {
                         currentQA.question = text;
