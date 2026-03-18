@@ -20,6 +20,7 @@ html, body {
 .sidebar_title{
     justify-self:center;
     margin-top: 63px;
+    color:white;
 }
 #content{
     /* padding: 20px; */
