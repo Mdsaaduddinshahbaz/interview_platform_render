@@ -56,7 +56,7 @@ socket.on("receive_message", function (data) {
     else {
         div.className = "userresponse";
         div.className = "left"
-        div.innerText = "Others" + ": " + data.message;
+        div.innerText = "Interviewer" + ": " + data.message;
         container.appendChild(div);
         document.body.append(container)
     }
