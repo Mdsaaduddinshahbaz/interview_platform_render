@@ -30,6 +30,7 @@ html, body {
     height: 100%;
     display: flex;
     flex-direction: column;
+    background:#3d4152;
 }
 .meets:hover{
     /* cursor:pointer; */
