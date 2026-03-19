@@ -80,7 +80,7 @@ socket.on("receive_message", function (data) {
 // }
 recognition.onresult = function (event) {
     const transcript = event.results[0][0].transcript;
-    //console.log(transcript);
+    console.log(transcript);
 
     // const container = document.createElement("person1");
     // const divs = document.createElement("div");
