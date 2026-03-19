@@ -19,7 +19,7 @@ messages=db["messsages"]
 llm_results=db["llm_results"]
 def create_new_meeting(participants_name:list ,partcipants:list):
     print("participants in database.py",partcipants)
-    meet_id=meetings.insert_one({"participants_name":participants_name,"participants":partcipants,"created_time":datetime.utcnow()})
+    meet_id=meetings.insert_one({"participants_name":participants_name,"participants":partcipants,"is_evaluated":False,"created_time":datetime.utcnow()})
     print(meet_id.inserted_id)
     return meet_id.inserted_id
 def update_participants_in_meeting(userid, meet_id,username):
